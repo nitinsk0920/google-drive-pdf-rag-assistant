@@ -20,14 +20,16 @@ The workflow also includes a chat-based AI Agent that retrieves relevant chunks 
 
 ---
 
-## Workflow overview
+## Workflow Overview
 
 ### Ingestion flow
+
 When a new PDF is added to the watched Google Drive folder:
 
 `Google Drive Trigger → Download file → Extract from File → Default Data Loader → Recursive Character Text Splitter → Embeddings OpenAI → Pinecone Vector Store`
 
 ### Question answering flow
+
 When a user sends a chat message:
 
 `When chat message received → AI Agent → Pinecone Vector Store Tool → OpenRouter Chat Model`
@@ -56,119 +58,85 @@ AI Agent
          └── Embeddings OpenAI
 
 
-## Features in Detail
 
-### 1. Google Drive Folder Monitoring
+Features in detail
+1. Google Drive folder monitoring
 
-The workflow continuously monitors a specified Google Drive folder. Whenever a new PDF is uploaded, the ingestion pipeline is triggered automatically.
+The workflow watches a chosen Google Drive folder and starts ingestion whenever a new PDF is added.
 
----
+2. PDF text extraction
 
-### 2. PDF Text Extraction
+The PDF is downloaded and parsed into plain text so it can be processed by the vector pipeline.
 
-The newly uploaded PDF is downloaded from Google Drive and converted into plain text, making it suitable for further processing.
+3. Chunking
 
----
+The extracted text is split into smaller chunks using a Recursive Character Text Splitter.
 
-### 3. Text Chunking
+4. Embeddings
 
-The extracted text is divided into smaller chunks using a **Recursive Character Text Splitter**. This improves retrieval accuracy and embedding quality.
+Each chunk is converted into vector embeddings using OpenAI embeddings.
 
----
+5. Vector storage
 
-### 4. Embedding Generation
+The embeddings are stored in Pinecone for similarity search and retrieval.
 
-Each text chunk is converted into vector embeddings using **OpenAI Embeddings**, enabling semantic search.
+6. RAG question answering
 
----
+When a chat message is received, the AI Agent queries Pinecone for relevant chunks and uses them to generate an answer.
 
-### 5. Vector Storage
+Setup instructions
+1. Create your Google Drive folder
 
-The generated embeddings are stored in **Pinecone**, which serves as the vector database for fast similarity search and document retrieval.
+Create a dedicated folder in Google Drive for PDFs that should be indexed.
 
----
+The workflow will watch this folder for new files.
 
-### 6. RAG-based Question Answering
+2. Set up Pinecone
 
-When a user sends a query, the AI Agent retrieves the most relevant document chunks from Pinecone and uses them as context to generate an accurate response.
+Create a Pinecone project and an index for your document embeddings.
 
----
+Make sure the vector dimension matches your embedding model.
 
-# Setup Instructions
+3. Add OpenAI credentials
 
-### 1. Create a Google Drive Folder
+Add your OpenAI API key in n8n for embeddings.
 
-Create a dedicated Google Drive folder that will contain all PDFs you want the workflow to index.
+4. Add OpenRouter credentials
 
-The **Google Drive Trigger** node will continuously monitor this folder for newly added files.
+Add your OpenRouter API key in n8n for the chat model used by the AI Agent.
 
----
+5. Configure the n8n workflow
 
-### 2. Set Up Pinecone
+Import the workflow JSON into n8n and connect the required credentials:
 
-Create a Pinecone project and create an index to store document embeddings.
+Google Drive
+OpenAI
+Pinecone
+OpenRouter
+Important notes
+The Google Drive Trigger should point to the exact folder you want to monitor.
+The ingestion flow runs automatically when a new PDF is added.
+The same embedding model should be used consistently for ingestion and retrieval.
+Pinecone acts as the vector database for retrieving relevant PDF text chunks.
+The AI Agent should use the Pinecone tool for answering document-related questions.
+Example usage
+Ingestion
 
-> **Note:** Ensure that the index dimension matches the embedding model you are using.
-
----
-
-### 3. Configure OpenAI Credentials
-
-Add your **OpenAI API Key** in n8n and connect it to the **OpenAI Embeddings** node.
-
----
-
-### 4. Configure OpenRouter Credentials
-
-Add your **OpenRouter API Key** in n8n and connect it to the **OpenRouter Chat Model** node.
-
----
-
-### 5. Import the Workflow
-
-Import the exported workflow JSON into n8n.
-
-Reconnect the following credentials:
-
-- Google Drive
-- OpenAI
-- Pinecone
-- OpenRouter
-
----
-
-# Important Notes
-
-- Configure the **Google Drive Trigger** to watch the correct folder.
-- Every newly uploaded PDF is automatically indexed.
-- Use the **same embedding model** for both document ingestion and document retrieval.
-- Pinecone stores all document embeddings and performs semantic similarity search.
-- The AI Agent should always use the **Pinecone Vector Store** tool when answering questions related to uploaded documents.
-
----
-
-# Example Usage
-
-## 📄 Document Ingestion
-
-Upload a PDF into the monitored Google Drive folder.
+Add a PDF to the monitored Google Drive folder.
 
 The workflow automatically:
 
-- Downloads the PDF
-- Extracts the document text
-- Splits the text into chunks
-- Generates vector embeddings
-- Stores the embeddings in Pinecone
+downloads the PDF
+extracts the text
+splits the text
+embeds the chunks
+stores them in Pinecone
+Question answering
 
----
+Ask a question in chat, such as:
 
-## 💬 Question Answering
+Summarize the uploaded PDF
+What are the main skills mentioned in the document?
+Extract the key project details from the resume
 
-Ask questions such as:
-
-- *Summarize the uploaded PDF.*
-- *What are the main skills mentioned in the document?*
-- *Extract the key project details from the resume.*
-
-The AI Agent retrieves the most relevant document chunks from Pinecone and generates an accurate response using Retrieval-Augmented Generation (RAG).
+The AI Agent searches Pinecone and responds using the most relevant chunks.

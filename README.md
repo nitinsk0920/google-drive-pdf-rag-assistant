@@ -56,55 +56,55 @@ AI Agent
          └── Embeddings OpenAI
 
 
-Features in detail
-1. Google Drive folder monitoring
+## Features in detail
+### 1. Google Drive folder monitoring
 
 The workflow watches a chosen Google Drive folder and starts ingestion whenever a new PDF is added.
 
-2. PDF text extraction
+### 2. PDF text extraction
 
 The PDF is downloaded and parsed into plain text so it can be processed by the vector pipeline.
 
-3. Chunking
+### 3. Chunking
 
 The extracted text is split into smaller chunks using a Recursive Character Text Splitter.
 
-4. Embeddings
+### 4. Embeddings
 
 Each chunk is converted into vector embeddings using OpenAI embeddings.
 
-5. Vector storage
+### 5. Vector storage
 
 The embeddings are stored in Pinecone for similarity search and retrieval.
 
-6. RAG question answering
+### 6. RAG question answering
 
 When a chat message is received, the AI Agent queries Pinecone for relevant chunks and uses them to generate an answer.
 
-Setup instructions
-1. Create your Google Drive folder
+## Setup instructions
+### 1. Create your Google Drive folder
 
 Create a dedicated folder in Google Drive for PDFs that should be indexed.
 
 The workflow will watch this folder for new files.
 
-2. Set up Pinecone
+### 2. Set up Pinecone
 
 Create a Pinecone project and an index for your document embeddings.
 
 Make sure the vector dimension matches your embedding model.
 
-3. Add OpenAI credentials
+### 3. Add OpenAI credentials
 
 Add your OpenAI API key in n8n for embeddings.
 
-4. Add OpenRouter credentials
+### 4. Add OpenRouter credentials
 
 Add your OpenRouter API key in n8n for the chat model used by the AI Agent.
 
-5. Configure the n8n workflow
+### 5. Configure the n8n workflow
 
-Import the workflow JSON into n8n and connect the required credentials:
+##Import the workflow JSON into n8n and connect the required credentials:
 
 Google Drive
 OpenAI
@@ -121,7 +121,7 @@ Ingestion
 
 Add a PDF to the monitored Google Drive folder.
 
-The workflow automatically:
+### The workflow automatically:
 
 downloads the PDF
 extracts the text
@@ -130,12 +130,10 @@ embeds the chunks
 stores them in Pinecone
 Question answering
 
-Ask a question in chat, such as:
+### Ask a question in chat, such as:
 
 Summarize the uploaded PDF
 What are the main skills mentioned in the document?
 Extract the key project details from the resume
 
 The AI Agent searches Pinecone and responds using the most relevant chunks.
-
-Suggested project structure
